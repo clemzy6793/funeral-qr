@@ -44,7 +44,7 @@
                     <div class="mb-4">
                         <label class="form-label fw-semibold">PDF Brochure <span class="text-danger">*</span></label>
                         <input type="file" name="pdf" accept=".pdf" class="form-control" required>
-                        <div class="form-text">PDF only, max 20 MB</div>
+                        <div class="form-text">PDF only, max 50 MB</div>
                     </div>
                     <?php else: ?>
                     <div class="alert alert-light border small mb-4">

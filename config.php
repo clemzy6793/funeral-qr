@@ -7,7 +7,7 @@ define('APP_URL', rtrim(getenv('APP_URL') ?: 'http://localhost:8080', '/'));
 define('DB_PATH', BASE_DIR . '/storage/brochures.db');
 define('UPLOAD_DIR', BASE_DIR . '/storage/uploads');
 define('QR_DIR', BASE_DIR . '/storage/qrcodes');
-define('MAX_UPLOAD_SIZE', 20 * 1024 * 1024);
+define('MAX_UPLOAD_SIZE', 50 * 1024 * 1024);
 
 define('DEFAULT_ADMIN_USER', getenv('ADMIN_USER') ?: 'admin');
 define('DEFAULT_ADMIN_PASS', getenv('ADMIN_PASS') ?: 'changeme123');

@@ -17,6 +17,8 @@ COPY . .
 
 RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 
+RUN echo "upload_max_filesize = 50M\npost_max_size = 55M\nmax_execution_time = 120" > /usr/local/etc/php/conf.d/uploads.ini
+
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
