@@ -49,7 +49,7 @@ class Brochure
         self::validateFields($data);
         $slug = self::generateSlug($data['deceased_name']);
         $pdfFilename = self::saveUpload($file);
-        $qrFilename = self::generateQR($slug);
+        $qrFilename = self::generateQR($slug, trim($data['deceased_name']));
 
         $stmt = Database::get()->prepare(
             'INSERT INTO brochures (slug, deceased_name, funeral_location, title, pdf_filename, qr_filename)
@@ -141,7 +141,7 @@ class Brochure
             throw new \RuntimeException('PDF file is required');
         }
         if ($file['size'] > MAX_UPLOAD_SIZE) {
-            throw new \RuntimeException('File too large (max 20MB)');
+            throw new \RuntimeException('File too large (max 50MB)');
         }
 
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
@@ -157,7 +157,7 @@ class Brochure
         return $filename;
     }
 
-    private static function generateQR(string $slug): string
+    private static function generateQR(string $slug, string $deceasedName): string
     {
         $url = APP_URL . '/brochure/' . $slug;
         $filename = $slug . '.png';
@@ -170,8 +170,34 @@ class Brochure
             'imageTransparent' => false,
         ]);
 
-        $data = (new QRCode($options))->render($url);
-        file_put_contents(QR_DIR . '/' . $filename, $data);
+        $qrData = (new QRCode($options))->render($url);
+        $qrImg  = imagecreatefromstring($qrData);
+        $qrW    = imagesx($qrImg);
+        $qrH    = imagesy($qrImg);
+
+        $fontSize = 5;
+        $textW    = imagefontwidth($fontSize) * strlen($deceasedName);
+        $textH    = imagefontheight($fontSize);
+        $padding  = 15;
+        $canvasW  = max($qrW, $textW + 20);
+        $canvasH  = $qrH + $textH + $padding * 2;
+
+        $canvas = imagecreatetruecolor($canvasW, $canvasH);
+        $white  = imagecolorallocate($canvas, 255, 255, 255);
+        $black  = imagecolorallocate($canvas, 30, 30, 30);
+        imagefill($canvas, 0, 0, $white);
+
+        $qrX = (int)(($canvasW - $qrW) / 2);
+        imagecopy($canvas, $qrImg, $qrX, 0, 0, 0, $qrW, $qrH);
+
+        $textX = (int)(($canvasW - $textW) / 2);
+        $textY = $qrH + $padding;
+        imagestring($canvas, $fontSize, $textX, $textY, $deceasedName, $black);
+
+        imagepng($canvas, QR_DIR . '/' . $filename);
+        imagedestroy($qrImg);
+        imagedestroy($canvas);
+
         return $filename;
     }
 }
