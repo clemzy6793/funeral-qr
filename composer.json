@@ -1,0 +1,13 @@
+{
+    "name": "funeral/qr-brochure",
+    "description": "Funeral brochure QR code generator",
+    "require": {
+        "php": ">=8.1",
+        "chillerlan/php-qrcode": "^4.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}

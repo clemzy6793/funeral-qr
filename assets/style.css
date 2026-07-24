@@ -1,0 +1,96 @@
+/* ── Public memorial page ────────────────────────────────── */
+.public-body {
+    margin: 0;
+    padding: 0;
+}
+
+.memorial-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    padding: 1.5rem;
+}
+
+.memorial-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 3rem 2.5rem;
+    text-align: center;
+    max-width: 460px;
+    width: 100%;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+}
+
+.memorial-cross {
+    font-size: 2.5rem;
+    color: #c9a96e;
+    line-height: 1;
+    margin-bottom: 0.75rem;
+}
+
+.memorial-subtitle {
+    font-size: 0.95rem;
+    color: #888;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.memorial-name {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin: 0.5rem 0 0.75rem;
+    line-height: 1.2;
+}
+
+.memorial-title {
+    font-size: 1.05rem;
+    color: #555;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+}
+
+.memorial-divider {
+    width: 60px;
+    height: 2px;
+    background: #c9a96e;
+    margin: 1.25rem auto;
+}
+
+.memorial-location {
+    font-size: 1.05rem;
+    color: #555;
+    margin-bottom: 2rem;
+}
+
+.memorial-btn {
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border-radius: 0.5rem;
+}
+
+/* ── Admin tweaks ────────────────────────────────────────── */
+.table th {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.dropdown-item i {
+    width: 1.2rem;
+    display: inline-block;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 576px) {
+    .memorial-card {
+        padding: 2rem 1.5rem;
+    }
+    .memorial-name {
+        font-size: 1.4rem;
+    }
+}

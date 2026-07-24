@@ -1,0 +1,7 @@
+/vendor/
+/storage/brochures.db
+/storage/uploads/*
+/storage/qrcodes/*
+!storage/uploads/.gitkeep
+!storage/qrcodes/.gitkeep
+.env
