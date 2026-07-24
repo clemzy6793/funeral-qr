@@ -159,6 +159,17 @@ class Brochure
         return $filename;
     }
 
+    public static function regenerateAllQRs(): int
+    {
+        $brochures = self::getAll();
+        $count = 0;
+        foreach ($brochures as $b) {
+            self::generateQR($b['slug'], $b['deceased_name']);
+            $count++;
+        }
+        return $count;
+    }
+
     private static function generateQR(string $slug, string $deceasedName): string
     {
         $url = APP_URL . '/brochure/' . $slug;
@@ -177,12 +188,22 @@ class Brochure
         $qrW    = imagesx($qrImg);
         $qrH    = imagesy($qrImg);
 
-        $fontSize = 5;
-        $textW    = imagefontwidth($fontSize) * strlen($deceasedName);
-        $textH    = imagefontheight($fontSize);
-        $padding  = 15;
-        $canvasW  = max($qrW, $textW + 20);
-        $canvasH  = $qrH + $textH + $padding * 2;
+        $font = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';
+        $fontAvailable = file_exists($font);
+        $ptSize = 18;
+        $padding = 20;
+
+        if ($fontAvailable) {
+            $bbox   = imagettfbbox($ptSize, 0, $font, $deceasedName);
+            $textW  = $bbox[2] - $bbox[0];
+            $textH  = $bbox[1] - $bbox[7];
+        } else {
+            $textW = imagefontwidth(5) * strlen($deceasedName);
+            $textH = imagefontheight(5);
+        }
+
+        $canvasW = max($qrW, $textW + 40);
+        $canvasH = $qrH + $textH + $padding * 2;
 
         $canvas = imagecreatetruecolor($canvasW, $canvasH);
         $white  = imagecolorallocate($canvas, 255, 255, 255);
@@ -192,9 +213,15 @@ class Brochure
         $qrX = (int)(($canvasW - $qrW) / 2);
         imagecopy($canvas, $qrImg, $qrX, 0, 0, 0, $qrW, $qrH);
 
-        $textX = (int)(($canvasW - $textW) / 2);
-        $textY = $qrH + $padding;
-        imagestring($canvas, $fontSize, $textX, $textY, $deceasedName, $black);
+        if ($fontAvailable) {
+            $textX = (int)(($canvasW - $textW) / 2);
+            $textY = $qrH + $padding + $textH;
+            imagettftext($canvas, $ptSize, 0, $textX, $textY, $black, $font, $deceasedName);
+        } else {
+            $textX = (int)(($canvasW - $textW) / 2);
+            $textY = $qrH + $padding;
+            imagestring($canvas, 5, $textX, $textY, $deceasedName, $black);
+        }
 
         imagepng($canvas, QR_DIR . '/' . $filename);
         imagedestroy($qrImg);

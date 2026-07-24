@@ -170,6 +170,13 @@ if (preg_match('#^/admin/delete/(\d+)$#', $uri, $m) && $method === 'POST') {
     redirect('/admin', 'Brochure deleted');
 }
 
+// Regenerate all QR codes
+if ($uri === '/admin/regenerate-qr' && $method === 'POST') {
+    Auth::verifyCsrf();
+    $count = Brochure::regenerateAllQRs();
+    redirect('/admin', "Regenerated {$count} QR code(s) with names");
+}
+
 // Serve QR image (inline or download)
 if (preg_match('#^/admin/qr/(\d+)$#', $uri, $m)) {
     $brochure = Brochure::getById((int) $m[1]);

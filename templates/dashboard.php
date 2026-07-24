@@ -3,9 +3,17 @@
         <h2 class="fw-bold mb-0">Brochures</h2>
         <p class="text-muted small mb-0"><?= $total ?> total</p>
     </div>
-    <a href="/admin/upload" class="btn btn-dark">
-        <i class="bi bi-plus-lg"></i> Upload New
-    </a>
+    <div class="d-flex gap-2">
+        <form method="POST" action="/admin/regenerate-qr" class="d-inline">
+            <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+            <button type="submit" class="btn btn-outline-secondary" title="Regenerate all QR codes with names">
+                <i class="bi bi-arrow-clockwise"></i> Regen QRs
+            </button>
+        </form>
+        <a href="/admin/upload" class="btn btn-dark">
+            <i class="bi bi-plus-lg"></i> Upload New
+        </a>
+    </div>
 </div>
 
 <form class="mb-4" method="GET">

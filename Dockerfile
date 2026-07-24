@@ -1,7 +1,9 @@
 FROM php:8.3-apache
 
 RUN apt-get update && apt-get install -y \
-    libpng-dev libzip-dev unzip sqlite3 \
+    libpng-dev libzip-dev unzip sqlite3 libfreetype6-dev libjpeg62-turbo-dev \
+    fonts-dejavu-core \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd zip \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
