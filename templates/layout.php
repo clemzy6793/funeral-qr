@@ -19,6 +19,9 @@
                 <span class="text-light small opacity-75">
                     <i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['admin_user'] ?? '') ?>
                 </span>
+                <a href="/admin/password" class="btn btn-outline-light btn-sm" title="Change Password">
+                    <i class="bi bi-shield-lock"></i>
+                </a>
                 <a href="/logout" class="btn btn-outline-light btn-sm">
                     <i class="bi bi-box-arrow-right"></i> Logout
                 </a>

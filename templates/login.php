@@ -21,7 +21,12 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label small fw-semibold">Password</label>
-                        <input type="password" name="password" class="form-control" required>
+                        <div class="input-group">
+                            <input type="password" name="password" class="form-control" required>
+                            <button type="button" class="btn btn-outline-secondary" onclick="togglePw(this)">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-dark w-100">
                         <i class="bi bi-box-arrow-in-right"></i> Sign In
@@ -31,3 +36,17 @@
         </div>
     </div>
 </div>
+
+<script>
+function togglePw(btn) {
+    var input = btn.parentElement.querySelector('input');
+    var icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'bi bi-eye-slash';
+    } else {
+        input.type = 'password';
+        icon.className = 'bi bi-eye';
+    }
+}
+</script>

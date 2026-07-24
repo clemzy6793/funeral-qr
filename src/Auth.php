@@ -39,6 +39,23 @@ class Auth
         session_destroy();
     }
 
+    public static function changePassword(string $current, string $new): bool
+    {
+        $db = Database::get();
+        $stmt = $db->prepare('SELECT password_hash FROM admins WHERE id = ?');
+        $stmt->execute([$_SESSION['admin_id']]);
+        $admin = $stmt->fetch();
+
+        if (!$admin || !password_verify($current, $admin['password_hash'])) {
+            return false;
+        }
+
+        $hash = password_hash($new, PASSWORD_BCRYPT);
+        $db->prepare('UPDATE admins SET password_hash = ? WHERE id = ?')
+           ->execute([$hash, $_SESSION['admin_id']]);
+        return true;
+    }
+
     public static function csrfToken(): string
     {
         if (empty($_SESSION['csrf_token'])) {

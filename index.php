@@ -112,6 +112,28 @@ if ($uri === '/admin/upload') {
     render('form', ['brochure' => null, 'error' => $error, 'pageTitle' => 'Upload Brochure']);
 }
 
+// Change password
+if ($uri === '/admin/password') {
+    $error = null;
+    $success = false;
+    if ($method === 'POST') {
+        Auth::verifyCsrf();
+        $current = $_POST['current_password'] ?? '';
+        $new     = $_POST['new_password'] ?? '';
+        $confirm = $_POST['confirm_password'] ?? '';
+        if (strlen($new) < 6) {
+            $error = 'New password must be at least 6 characters';
+        } elseif ($new !== $confirm) {
+            $error = 'New passwords do not match';
+        } elseif (!Auth::changePassword($current, $new)) {
+            $error = 'Current password is incorrect';
+        } else {
+            redirect('/admin', 'Password changed successfully');
+        }
+    }
+    render('password', ['error' => $error, 'pageTitle' => 'Change Password']);
+}
+
 // Edit
 if (preg_match('#^/admin/edit/(\d+)$#', $uri, $m)) {
     $brochure = Brochure::getById((int) $m[1]);
