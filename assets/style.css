@@ -93,10 +93,18 @@
 }
 
 /* ── Admin tweaks ────────────────────────────────────────── */
+.table-responsive {
+    overflow: visible;
+}
+
 .table th {
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+}
+
+.dropdown-menu {
+    z-index: 1050;
 }
 
 .dropdown-item i {
