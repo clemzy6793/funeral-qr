@@ -63,7 +63,26 @@
 .memorial-location {
     font-size: 1.05rem;
     color: #555;
+    margin-bottom: 0.5rem;
+}
+
+.memorial-digital-address {
+    font-size: 0.9rem;
     margin-bottom: 2rem;
+}
+
+.memorial-digital-address a {
+    color: #c9a96e;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.memorial-digital-address a:hover {
+    text-decoration: underline;
+}
+
+.memorial-location + a.memorial-btn {
+    margin-top: 1.5rem;
 }
 
 .memorial-btn {

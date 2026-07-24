@@ -38,11 +38,17 @@ class Database
             slug TEXT UNIQUE NOT NULL,
             deceased_name TEXT NOT NULL,
             funeral_location TEXT NOT NULL,
+            digital_address TEXT,
             title TEXT,
             pdf_filename TEXT NOT NULL,
             qr_filename TEXT NOT NULL,
             created_at TEXT DEFAULT (datetime('now')),
             updated_at TEXT DEFAULT (datetime('now'))
         )");
+
+        // Migration: add digital_address if table already exists without it
+        try {
+            $db->exec("ALTER TABLE brochures ADD COLUMN digital_address TEXT");
+        } catch (\Exception $e) {}
     }
 }

@@ -52,13 +52,14 @@ class Brochure
         $qrFilename = self::generateQR($slug, trim($data['deceased_name']));
 
         $stmt = Database::get()->prepare(
-            'INSERT INTO brochures (slug, deceased_name, funeral_location, title, pdf_filename, qr_filename)
-             VALUES (?, ?, ?, ?, ?, ?)'
+            'INSERT INTO brochures (slug, deceased_name, funeral_location, digital_address, title, pdf_filename, qr_filename)
+             VALUES (?, ?, ?, ?, ?, ?, ?)'
         );
         $stmt->execute([
             $slug,
             trim($data['deceased_name']),
             trim($data['funeral_location']),
+            trim($data['digital_address'] ?? '') ?: null,
             trim($data['title'] ?? '') ?: null,
             $pdfFilename,
             $qrFilename,
@@ -70,11 +71,12 @@ class Brochure
     {
         self::validateFields($data);
         $stmt = Database::get()->prepare(
-            "UPDATE brochures SET deceased_name=?, funeral_location=?, title=?, updated_at=datetime('now') WHERE id=?"
+            "UPDATE brochures SET deceased_name=?, funeral_location=?, digital_address=?, title=?, updated_at=datetime('now') WHERE id=?"
         );
         $stmt->execute([
             trim($data['deceased_name']),
             trim($data['funeral_location']),
+            trim($data['digital_address'] ?? '') ?: null,
             trim($data['title'] ?? '') ?: null,
             $id,
         ]);

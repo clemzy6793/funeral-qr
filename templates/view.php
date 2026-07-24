@@ -19,6 +19,18 @@
             <?= htmlspecialchars($brochure['funeral_location']) ?>
         </div>
 
+        <?php if (!empty($brochure['digital_address'])): ?>
+        <div class="memorial-digital-address">
+            <a href="https://ghanapostgps.com/map#<?= urlencode($brochure['digital_address']) ?>"
+               target="_blank" rel="noopener">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px; opacity:.7">
+                    <path d="M8 0a5 5 0 0 0-5 5c0 3.5 5 11 5 11s5-7.5 5-11a5 5 0 0 0-5-5zm0 7.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+                </svg>
+                <?= htmlspecialchars($brochure['digital_address']) ?>
+            </a>
+        </div>
+        <?php endif; ?>
+
         <a href="/brochure/<?= htmlspecialchars($brochure['slug']) ?>/pdf"
            class="btn btn-dark btn-lg memorial-btn" target="_blank">
             <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-3px">

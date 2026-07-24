@@ -34,6 +34,14 @@
                     </div>
 
                     <div class="mb-3">
+                        <label class="form-label fw-semibold">Digital Address <span class="text-muted fw-normal">(optional)</span></label>
+                        <input type="text" name="digital_address" class="form-control"
+                               placeholder="e.g. GA-123-4567"
+                               value="<?= htmlspecialchars($brochure['digital_address'] ?? $_POST['digital_address'] ?? '') ?>">
+                        <div class="form-text">Ghana Post GPS address for the funeral location</div>
+                    </div>
+
+                    <div class="mb-3">
                         <label class="form-label fw-semibold">Brochure Title <span class="text-muted fw-normal">(optional)</span></label>
                         <input type="text" name="title" class="form-control"
                                placeholder="e.g. Celebration of Life"
