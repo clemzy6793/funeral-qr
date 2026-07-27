@@ -2,7 +2,7 @@
 set -e
 
 mkdir -p /var/www/html/storage/uploads /var/www/html/storage/qrcodes /var/www/html/storage/logs
-echo "Deny from all" > /var/www/html/storage/.htaccess
+echo "Require all denied" > /var/www/html/storage/.htaccess
 # QR code PNGs are public (they encode public event URLs); uploads stay blocked
 echo "Require all granted" > /var/www/html/storage/qrcodes/.htaccess
 chown -R www-data:www-data /var/www/html/storage
