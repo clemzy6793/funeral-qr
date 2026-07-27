@@ -78,7 +78,7 @@ foreach ($brochures as $b) {
         $funeralTypeId,
         $eventSlug,
         $b['deceased_name'],
-        $b['location'] ?? null,
+        $b['funeral_location'] ?? null,
         $b['digital_address'] ?? null,
         $dynamicFields,
         $b['id'],
@@ -86,30 +86,35 @@ foreach ($brochures as $b) {
     ]);
     $eventId = (int)$stmt->fetchColumn();
 
-    if (!empty($b['pdf_path']) && file_exists(BASE_DIR . '/' . $b['pdf_path'])) {
-        $fileSize = filesize(BASE_DIR . '/' . $b['pdf_path']);
+    $pdfPath = !empty($b['pdf_filename']) ? 'storage/uploads/' . $b['pdf_filename'] : null;
+    if ($pdfPath && file_exists(BASE_DIR . '/' . $pdfPath)) {
+        $fileSize = filesize(BASE_DIR . '/' . $pdfPath);
         $pdo->prepare(
-            "INSERT INTO media (tenant_id, event_id, type, file_path, original_name, mime_type, file_size, created_at)
-             VALUES (?, ?, 'pdf', ?, ?, 'application/pdf', ?, NOW())"
+            "INSERT INTO media (tenant_id, event_id, type, filename, file_path, original_name, mime_type, file_size, created_at)
+             VALUES (?, ?, 'pdf', ?, ?, ?, 'application/pdf', ?, NOW())"
         )->execute([
             $legacyTenantId,
             $eventId,
-            $b['pdf_path'],
-            basename($b['pdf_path']),
+            $b['pdf_filename'],
+            $pdfPath,
+            $b['pdf_filename'],
             $fileSize,
         ]);
     }
 
-    if (!empty($b['qr_path']) && file_exists(BASE_DIR . '/' . $b['qr_path'])) {
+    $qrPath = !empty($b['qr_filename']) ? 'storage/qrcodes/' . $b['qr_filename'] : null;
+    if ($qrPath && file_exists(BASE_DIR . '/' . $qrPath)) {
         $qrCode = DB::uuid();
         $pdo->prepare(
-            "INSERT INTO qr_codes (tenant_id, event_id, code, file_path, created_at)
-             VALUES (?, ?, ?, ?, NOW())"
+            "INSERT INTO qr_codes (tenant_id, event_id, code, filename, url, file_path, format, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, 'png', NOW())"
         )->execute([
             $legacyTenantId,
             $eventId,
             $qrCode,
-            $b['qr_path'],
+            $b['qr_filename'],
+            rtrim(APP_URL, '/') . '/brochure/' . $eventSlug,
+            $qrPath,
         ]);
     }
 
