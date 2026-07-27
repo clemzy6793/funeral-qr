@@ -73,11 +73,12 @@ if (preg_match('#^/brochure/([a-z0-9-]+)$#', $uri, $m)) {
     $pdf = DB::fetchOne("SELECT * FROM media WHERE event_id = ? AND type = 'pdf' LIMIT 1", [$event['id']]);
     $gallery = DB::fetchAll("SELECT * FROM media WHERE event_id = ? AND type = 'gallery'", [$event['id']]);
 
-    QrCode::recordScan(
-        (int)(Event::getQrCode($event['id'])['id'] ?? 0),
-        $event['id'],
-        $event['tenant_id']
-    );
+    $qr = Event::getQrCode($event['id']);
+    if ($qr) {
+        QrCode::recordScan((int)$qr['id'], $event['id'], $event['tenant_id']);
+    } else {
+        Event::incrementScans($event['id']);
+    }
 
     App::render('public/event', [
         'event'           => $event,
