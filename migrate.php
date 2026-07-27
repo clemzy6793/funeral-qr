@@ -33,9 +33,10 @@ foreach ($files as $file) {
     echo "Running: {$name} ... ";
     $sql = file_get_contents($file);
 
+    $lines = preg_replace('/^--.*$/m', '', $sql);
     $statements = array_filter(
-        array_map('trim', explode(';', $sql)),
-        fn($s) => $s !== '' && !str_starts_with($s, '--')
+        array_map('trim', explode(';', $lines)),
+        fn($s) => $s !== ''
     );
 
     foreach ($statements as $statement) {
