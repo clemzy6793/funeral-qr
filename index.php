@@ -397,6 +397,27 @@ if (str_starts_with($uri, '/superadmin')) {
         ], 'layouts/admin');
     }
 
+    // Tenant detail
+    if (preg_match('#^/superadmin/tenants/(\d+)$#', $uri, $m) && $method === 'GET') {
+        $tenant = Tenant::find((int)$m[1]);
+        if (!$tenant) App::abort(404);
+        $users   = DB::fetchAll("SELECT * FROM users WHERE tenant_id = ? ORDER BY created_at", [$tenant['id']]);
+        $events  = DB::fetchAll("SELECT * FROM events WHERE tenant_id = ? ORDER BY created_at DESC", [$tenant['id']]);
+        $sub     = Tenant::getSubscription($tenant['id']);
+        $scans   = DB::fetchOne("SELECT COALESCE(SUM(total_scans),0) AS total FROM events WHERE tenant_id = ?", [$tenant['id']]);
+        $storage = round(($tenant['storage_used'] ?? 0) / 1048576, 2);
+        App::render('superadmin/tenant-detail', [
+            'activePage'  => 'tenants',
+            'pageTitle'   => $tenant['name'],
+            'tenant'      => $tenant,
+            'users'       => $users,
+            'events'      => $events,
+            'subscription'=> $sub,
+            'totalScans'  => (int)($scans['total'] ?? 0),
+            'storageMB'   => $storage,
+        ], 'layouts/admin');
+    }
+
     // Tenant actions
     if (preg_match('#^/superadmin/tenants/(\d+)/(activate|suspend|delete|impersonate)$#', $uri, $m) && $method === 'POST') {
         App::verifyCsrf();
