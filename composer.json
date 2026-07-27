@@ -1,9 +1,10 @@
 {
-    "name": "funeral/qr-brochure",
-    "description": "Funeral brochure QR code generator",
+    "name": "eventqr/platform",
+    "description": "Multi-tenant SaaS Digital Event QR Management Platform",
     "require": {
         "php": ">=8.1",
-        "chillerlan/php-qrcode": "^4.3"
+        "chillerlan/php-qrcode": "^4.3",
+        "phpmailer/phpmailer": "^6.9"
     },
     "autoload": {
         "psr-4": {

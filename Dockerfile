@@ -2,9 +2,9 @@ FROM php:8.3-apache
 
 RUN apt-get update && apt-get install -y \
     libpng-dev libzip-dev unzip sqlite3 libfreetype6-dev libjpeg62-turbo-dev \
-    fonts-dejavu-core \
+    libpq-dev fonts-dejavu-core postgresql-client \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd zip \
+    && docker-php-ext-install gd zip pdo_pgsql \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
