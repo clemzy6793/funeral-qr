@@ -32,6 +32,47 @@ function requireAuth(): void
     }
 }
 
+function clientIp(): string
+{
+    // Behind nginx: REMOTE_ADDR is the proxy, real IP is in X-Forwarded-For (first hop)
+    $xff = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '';
+    if ($xff) return trim(explode(',', $xff)[0]);
+    return $_SERVER['REMOTE_ADDR'] ?? '';
+}
+
+/** Returns minutes to wait if throttled, or null if allowed. */
+function loginThrottled(string $email): ?int
+{
+    $row = DB::fetchOne(
+        "SELECT COUNT(*) AS n, EXTRACT(EPOCH FROM (MAX(attempted_at) + INTERVAL '15 minutes' - NOW())) AS wait_s
+         FROM login_attempts
+         WHERE success = FALSE
+           AND attempted_at > NOW() - INTERVAL '15 minutes'
+           AND (email = ? OR ip_address = ?)",
+        [$email, clientIp()]
+    );
+    if ($row && (int)$row['n'] >= 5) {
+        return max(1, (int)ceil(((float)$row['wait_s']) / 60));
+    }
+    return null;
+}
+
+function recordLoginAttempt(string $email, bool $success): void
+{
+    DB::insert('login_attempts', [
+        'email'      => mb_substr($email, 0, 255),
+        'ip_address' => mb_substr(clientIp(), 0, 45),
+        'success'    => $success ? 'true' : 'false',
+    ]);
+    if ($success) {
+        DB::query("DELETE FROM login_attempts WHERE email = ? AND success = FALSE", [$email]);
+    }
+    // Opportunistic cleanup of stale rows
+    if (random_int(1, 50) === 1) {
+        DB::query("DELETE FROM login_attempts WHERE attempted_at < NOW() - INTERVAL '1 day'");
+    }
+}
+
 function requireSuperAdmin(): void
 {
     requireAuth();
@@ -137,18 +178,26 @@ if ($uri === '/login') {
     $error = null;
     if ($method === 'POST') {
         App::verifyCsrf();
-        $user = User::attempt($_POST['email'] ?? '', $_POST['password'] ?? '');
-        if ($user) {
-            if (!$user['email_verified_at'] && $user['role'] !== 'super_admin') {
-                $error = 'Please verify your email first.';
-            } else {
-                $_SESSION['user_id'] = $user['id'];
-                session_regenerate_id(true);
-                App::log('LOGIN', 'user', $user['id']);
-                App::redirect($user['role'] === 'super_admin' ? '/superadmin' : '/dashboard');
-            }
+        $email = trim($_POST['email'] ?? '');
+        $wait = loginThrottled($email);
+        if ($wait !== null) {
+            $error = "Too many failed attempts. Please try again in {$wait} minute(s).";
         } else {
-            $error = 'Invalid email or password';
+            $user = User::attempt($email, $_POST['password'] ?? '');
+            if ($user) {
+                if (!$user['email_verified_at'] && $user['role'] !== 'super_admin') {
+                    $error = 'Please verify your email first.';
+                } else {
+                    recordLoginAttempt($email, true);
+                    $_SESSION['user_id'] = $user['id'];
+                    session_regenerate_id(true);
+                    App::log('LOGIN', 'user', $user['id']);
+                    App::redirect($user['role'] === 'super_admin' ? '/superadmin' : '/dashboard');
+                }
+            } else {
+                recordLoginAttempt($email, false);
+                $error = 'Invalid email or password';
+            }
         }
     }
     App::render('auth/login', ['error' => $error, 'pageTitle' => 'Login'], 'layouts/auth');
